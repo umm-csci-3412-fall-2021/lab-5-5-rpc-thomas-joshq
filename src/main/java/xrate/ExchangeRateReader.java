@@ -1,8 +1,6 @@
 package xrate;
 
 import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
 import java.net.URL;
 
 import org.json.JSONObject;
@@ -14,6 +12,7 @@ import org.json.JSONTokener;
 public class ExchangeRateReader {
 
     private String accessKey;
+    private String baseUrl;
 
     /**
      * Construct an exchange rate reader using the given base URL. All requests will
@@ -33,12 +32,14 @@ public class ExchangeRateReader {
          * accessible in the two key functions. (You'll need it there to construct
          * the full URL.)
          */
+        baseUrl = baseURL;
 
         // TODO Your code here
 
         // Reads the Fixer.io API access key from the appropriate
         // environment variable.
         // You don't have to change this call.
+
         readAccessKey();
     }
 
@@ -72,9 +73,8 @@ public class ExchangeRateReader {
      * @throws IOException if there are problems reading from the server
      */
     public float getExchangeRate(String currencyCode, int year, int month, int day) throws IOException {
-        String urlStart = "http://data.fixer.io/api/";
 
-        String accessKey ="?access_key=";
+        String accessKeyBase ="?access_key=";
         String dayString = Integer.toString(day);
         String monthString = Integer.toString(month);
         if(day < 10){
@@ -84,7 +84,7 @@ public class ExchangeRateReader {
             monthString = "0" + monthString;
         }
 
-        String urlString = urlStart + year + "-" + monthString + "-" + dayString + accessKey + System.getenv("FIXER_IO_ACCESS_KEY");
+        String urlString = baseUrl + year + "-" + monthString + "-" + dayString + accessKeyBase + accessKey;
 
         URL url = new URL(urlString);
         JSONTokener tokener = new JSONTokener(url.openStream());
@@ -112,9 +112,7 @@ public class ExchangeRateReader {
      */
     public float getExchangeRate(String fromCurrency, String toCurrency, int year, int month, int day)
             throws IOException {
-                String urlStart = "http://data.fixer.io/api/";
-
-                String accessKey ="?access_key=";
+                String accessKeyBase ="?access_key=";
                 String dayString = Integer.toString(day);
                 String monthString = Integer.toString(month);
                 if(day < 10){
@@ -124,7 +122,7 @@ public class ExchangeRateReader {
                     monthString = "0" + monthString;
                 }
         
-                String urlString = urlStart + year + "-" + monthString + "-" + dayString + accessKey + System.getenv("FIXER_IO_ACCESS_KEY");
+                String urlString = baseUrl + year + "-" + monthString + "-" + dayString + accessKeyBase + accessKey;
         
                 URL url = new URL(urlString);
                 JSONTokener tokener = new JSONTokener(url.openStream());
