@@ -1,6 +1,10 @@
 package xrate;
 
 import java.io.IOException;
+import java.net.URL;
+
+import org.json.JSONObject;
+import org.json.JSONTokener;
 
 /**
  * Provide access to basic currency exchange rate services.
@@ -8,6 +12,7 @@ import java.io.IOException;
 public class ExchangeRateReader {
 
     private String accessKey;
+    private String baseUrl;
 
     /**
      * Construct an exchange rate reader using the given base URL. All requests will
@@ -27,12 +32,14 @@ public class ExchangeRateReader {
          * accessible in the two key functions. (You'll need it there to construct
          * the full URL.)
          */
+        baseUrl = baseURL;
 
         // TODO Your code here
 
         // Reads the Fixer.io API access key from the appropriate
         // environment variable.
         // You don't have to change this call.
+
         readAccessKey();
     }
 
@@ -66,28 +73,29 @@ public class ExchangeRateReader {
      * @throws IOException if there are problems reading from the server
      */
     public float getExchangeRate(String currencyCode, int year, int month, int day) throws IOException {
-        /*
-         * Here you should:
-         * 
-         *   - Construct the appropriate URL
-         *     - This needs to have the date (properly formatted)
-         *       and access key. See the Fixer.io documentation for
-         *       the details.
-         *   - Open a stream from the URL
-         *   - Construct a Tokener from that stream
-         *   - Use that to parse the response into a JSON object
-         *   - Extract the desired currency code from that JSON object
-         *     - Look at the structure of JSON objects returned by Fixer.io.
-         *     - You'll need to extract the "rates" (sub)object from the parsed
-         *       JSON object.
-         *     - You'll need to get the `float` associated with the desired
-         *       currency code from the "rates" object. 
-         */
 
-        // TODO Your code here
+        String accessKeyBase ="?access_key=";
+        String dayString = Integer.toString(day);
+        String monthString = Integer.toString(month);
+        if(day < 10){
+            dayString = "0" + dayString;
+        }
+        if(month < 10){
+            monthString = "0" + monthString;
+        }
 
-        // Remove the next line when you've implemented this method.
-        throw new UnsupportedOperationException();
+        String urlString = baseUrl + year + "-" + monthString + "-" + dayString + accessKeyBase + accessKey;
+
+        URL url = new URL(urlString);
+        JSONTokener tokener = new JSONTokener(url.openStream());
+        JSONObject obj = new JSONObject(tokener);
+        JSONObject data = obj.getJSONObject("rates");
+
+        float message = data.getFloat(currencyCode);
+
+        return message;
+        
+
     }
 
     /**
@@ -104,19 +112,28 @@ public class ExchangeRateReader {
      */
     public float getExchangeRate(String fromCurrency, String toCurrency, int year, int month, int day)
             throws IOException {
-        /*
-         * This is similar to the previous method except that you have to get
-         * the two currency rates and divide one by the other to get their
-         * relative exchange rate.
-         * 
-         * DON'T FORGET HOW TO PROGRAM! Extract helper functions to clarify
-         * what's going on, and try to avoid duplicate logic between this and
-         * the previous method.
-         */
+                String accessKeyBase ="?access_key=";
+                String dayString = Integer.toString(day);
+                String monthString = Integer.toString(month);
+                if(day < 10){
+                    dayString = "0" + dayString;
+                }
+                if(month < 10){
+                    monthString = "0" + monthString;
+                }
         
-        // TODO Your code here
+                String urlString = baseUrl + year + "-" + monthString + "-" + dayString + accessKeyBase + accessKey;
+        
+                URL url = new URL(urlString);
+                JSONTokener tokener = new JSONTokener(url.openStream());
+                JSONObject obj = new JSONObject(tokener);
+                System.out.println(obj.toString());
+                JSONObject data = obj.getJSONObject("rates");
+        
+                float messageFrom = data.getFloat(fromCurrency);
+                float messageTo = data.getFloat(toCurrency);
 
-        // Remove the next line when you've implemented this method.
-        throw new UnsupportedOperationException();
+        
+                return messageFrom/messageTo;
     }
 }

@@ -2,7 +2,6 @@ package xrate;
 
 import java.io.IOException;
 
-import org.junit.Ignore;
 import org.junit.Test;
 
 import static org.junit.Assert.*;
@@ -48,7 +47,7 @@ public class ExchangeRateTest {
 
     // TO GET THIS TEST TO RUN YOU NEED TO ADD A VALID ACCESS KEY IN THE URL
     @Test
-    @Ignore("Ignore (skip) this until you're ready to start to hit fixer.io when you run your tests")
+    
     public void checkUSDvsGBP20100625online() throws IOException {
         ExchangeRateReader xrReader = new ExchangeRateReader("http://data.fixer.io/api/");
         float rate = xrReader.getExchangeRate("USD", "GBP", 2010, 6, 25);
