@@ -1,6 +1,12 @@
 package xrate;
 
 import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.net.URL;
+
+import org.json.JSONObject;
+import org.json.JSONTokener;
 
 /**
  * Provide access to basic currency exchange rate services.
@@ -66,28 +72,30 @@ public class ExchangeRateReader {
      * @throws IOException if there are problems reading from the server
      */
     public float getExchangeRate(String currencyCode, int year, int month, int day) throws IOException {
-        /*
-         * Here you should:
-         * 
-         *   - Construct the appropriate URL
-         *     - This needs to have the date (properly formatted)
-         *       and access key. See the Fixer.io documentation for
-         *       the details.
-         *   - Open a stream from the URL
-         *   - Construct a Tokener from that stream
-         *   - Use that to parse the response into a JSON object
-         *   - Extract the desired currency code from that JSON object
-         *     - Look at the structure of JSON objects returned by Fixer.io.
-         *     - You'll need to extract the "rates" (sub)object from the parsed
-         *       JSON object.
-         *     - You'll need to get the `float` associated with the desired
-         *       currency code from the "rates" object. 
-         */
+        String urlStart = "http://data.fixer.io/api/";
 
-        // TODO Your code here
+        String accessKey ="?access_key=";
+        String dayString = Integer.toString(day);
+        String monthString = Integer.toString(month);
+        if(day < 10){
+            dayString = "0" + dayString;
+        }
+        if(month < 10){
+            monthString = "0" + monthString;
+        }
 
-        // Remove the next line when you've implemented this method.
-        throw new UnsupportedOperationException();
+        String urlString = urlStart + year + "-" + monthString + "-" + dayString + accessKey + System.getenv("FIXER_IO_ACCESS_KEY");
+
+        URL url = new URL(urlString);
+        JSONTokener tokener = new JSONTokener(url.openStream());
+        JSONObject obj = new JSONObject(tokener);
+        JSONObject data = obj.getJSONObject("rates");
+
+        float message = data.getFloat(currencyCode);
+
+        return message;
+        
+
     }
 
     /**
@@ -104,19 +112,30 @@ public class ExchangeRateReader {
      */
     public float getExchangeRate(String fromCurrency, String toCurrency, int year, int month, int day)
             throws IOException {
-        /*
-         * This is similar to the previous method except that you have to get
-         * the two currency rates and divide one by the other to get their
-         * relative exchange rate.
-         * 
-         * DON'T FORGET HOW TO PROGRAM! Extract helper functions to clarify
-         * what's going on, and try to avoid duplicate logic between this and
-         * the previous method.
-         */
-        
-        // TODO Your code here
+                String urlStart = "http://data.fixer.io/api/";
 
-        // Remove the next line when you've implemented this method.
-        throw new UnsupportedOperationException();
+                String accessKey ="?access_key=";
+                String dayString = Integer.toString(day);
+                String monthString = Integer.toString(month);
+                if(day < 10){
+                    dayString = "0" + dayString;
+                }
+                if(month < 10){
+                    monthString = "0" + monthString;
+                }
+        
+                String urlString = urlStart + year + "-" + monthString + "-" + dayString + accessKey + System.getenv("FIXER_IO_ACCESS_KEY");
+        
+                URL url = new URL(urlString);
+                JSONTokener tokener = new JSONTokener(url.openStream());
+                JSONObject obj = new JSONObject(tokener);
+                System.out.println(obj.toString());
+                JSONObject data = obj.getJSONObject("rates");
+        
+                float messageFrom = data.getFloat(fromCurrency);
+                float messageTo = data.getFloat(toCurrency);
+
+        
+                return messageFrom/messageTo;
     }
 }
